@@ -105,13 +105,13 @@ when "debian","gentoo"
         "8.10" => :run,
         "8.04" => :run },
       "gentoo" => { "default" => :run }
-    ), "execute[start-runsvdir]", :immediately
+    ), resources('execute[start-runsvdir]'), :immediately
     notifies value_for_platform(
       "debian" => { "squeeze/sid" => :run, "default" => :nothing },
       "default" => :nothing
-    ), "execute[runit-hup-init]", :immediately
+    ), resources('execute[runit-hup-init]'), :immediately
     if platform?("gentoo")
-      notifies :enable, "service[runit-start]"
+      notifies :enable, resources('service[runit-start]')
     end
   end
 
@@ -119,7 +119,7 @@ when "debian","gentoo"
     cookbook_file "/etc/event.d/runsvdir" do
       source "runsvdir"
       mode 0644
-      notifies :run, "execute[start-runsvdir]", :immediately
+      notifies :run, resources('execute[start-runsvdir]'), :immediately
       only_if do ::File.directory?("/etc/event.d") end
     end
   end
